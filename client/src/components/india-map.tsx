@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { indianStates, getSellersByState } from "@/lib/static-data";
@@ -14,6 +15,25 @@ interface IndiaMapProps {
 export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
   const [hoveredState, setHoveredState] = useState<StateData | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(1);
+  const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
+
+  // A small palette of muted/pastel colors to more closely resemble
+  // a political map with clear state fills and visible borders.
+  const stateColors = [
+    "#f7c6c7",
+    "#fbe7c6",
+    "#e8f6d7",
+    "#d6eaf8",
+    "#f0d6f7",
+    "#f3e7c6",
+    "#dfeef3",
+    "#fde2e2",
+  ];
+
+  const clamp = (v: number) => Math.min(2, Math.max(0.6, v));
+  const zoomIn = () => setZoom((z) => clamp(parseFloat((z + 0.1).toFixed(2))));
+  const zoomOut = () => setZoom((z) => clamp(parseFloat((z - 0.1).toFixed(2))));
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     setTooltipPosition({ x: e.clientX, y: e.clientY });
@@ -22,14 +42,16 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
       <motion.svg
-        viewBox="0 0 600 600"
-        className="w-full h-full max-w-3xl max-h-[70vh] drop-shadow-2xl"
+        viewBox="0 0 700 700"
+        className="w-full h-full max-w-4xl max-h-[75vh] drop-shadow-2xl"
         onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsMapHovered(true)}
+        onMouseLeave={() => setIsMapHovered(false)}
         role="img"
         aria-label="Interactive map of India showing jewelry sellers by state"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: +(zoom * (isMapHovered ? 1.06 : 1)).toFixed(3) }}
+        transition={{ duration: 0.45, ease: "easeOut", type: "spring", stiffness: 200, damping: 25 }}
       >
         <defs>
           <filter id="glow">
@@ -50,7 +72,6 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
             </feMerge>
           </filter>
           
-          {/* Rich gradients for visual appeal */}
           <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#FFD700" stopOpacity="0.6" />
             <stop offset="50%" stopColor="#FFA500" stopOpacity="0.5" />
@@ -70,13 +91,16 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
             <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
           </radialGradient>
           
-          {/* Decorative pattern */}
           <pattern id="decorPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
             <circle cx="5" cy="5" r="1.5" fill="#FFD700" opacity="0.15" />
             <circle cx="25" cy="25" r="1.5" fill="#FFA500" opacity="0.15" />
           </pattern>
+
+          {/* Pattern for states without sellers */}
+          <pattern id="emptyStatePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 0 10 L 20 10 M 10 0 L 10 20" stroke="rgba(150, 150, 160, 0.2)" strokeWidth="0.5"/>
+          </pattern>
           
-          {/* Shimmer effect */}
           <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="transparent" />
             <stop offset="50%" stopColor="rgba(255, 215, 0, 0.3)" />
@@ -84,11 +108,10 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
           </linearGradient>
         </defs>
 
-        {/* Decorative background circles */}
         <motion.circle
-          cx="300"
-          cy="300"
-          r="290"
+          cx="350"
+          cy="350"
+          r="340"
           fill="url(#mapBackground)"
           opacity="0.8"
           initial={{ scale: 0 }}
@@ -96,14 +119,12 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
           transition={{ duration: 1, ease: "easeOut" }}
         />
         
-        {/* Pattern overlay */}
-        <circle cx="300" cy="300" r="290" fill="url(#decorPattern)" opacity="0.4" />
+        <circle cx="350" cy="350" r="340" fill="url(#decorPattern)" opacity="0.4" />
         
-        {/* Animated decorative rings */}
         <motion.circle
-          cx="300"
-          cy="300"
-          r="260"
+          cx="350"
+          cy="350"
+          r="300"
           fill="none"
           stroke="#FFD700"
           strokeWidth="1"
@@ -111,18 +132,6 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 0.2 }}
           transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-        />
-        <motion.circle
-          cx="300"
-          cy="300"
-          r="275"
-          fill="none"
-          stroke="#FFA500"
-          strokeWidth="0.5"
-          opacity="0.15"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1.05, opacity: 0.15 }}
-          transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
         />
 
         {indianStates.map((state, index) => {
@@ -144,19 +153,16 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                     : isHovered && hasSellers
                     ? "url(#goldGradient)"
                     : hasSellers
-                    ? "rgba(255, 215, 0, 0.25)"
-                    : "rgba(100, 100, 120, 0.3)"
+                    ? stateColors[index % stateColors.length]
+                    : "url(#emptyStatePattern)"
                 }
-                stroke={
-                  isSelected
-                    ? "#FFD700"
-                    : isHovered && hasSellers
-                    ? "#FFA500"
-                    : hasSellers
-                    ? "rgba(255, 215, 0, 0.5)"
-                    : "rgba(150, 150, 160, 0.5)"
-                }
-                strokeWidth={isSelected ? 2.5 : isHovered ? 2 : 1.5}
+                stroke={isSelected ? "#222" : "#222"}
+                  strokeWidth={isSelected ? 1.6 : isHovered ? 1.2 : 0.9}
+                  strokeOpacity={1}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  paintOrder="fill stroke markers"
+                  vectorEffect="non-scaling-stroke"
                 filter={
                   isSelected 
                     ? "url(#hoverGlow)" 
@@ -193,28 +199,65 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                     : undefined
                 }
                 role="button"
-                aria-label={`${state.name}: ${hasSellers ? state.sellerCount + ' sellers' : 'No sellers yet'}`}
+                aria-label={`${state.name}: ${hasSellers ? state.sellerCount + ' sellers' : 'Coming soon'}`}
                 tabIndex={0}
                 data-testid={`map-state-${state.id.toLowerCase()}`}
               />
               
-              {/* State name label for states without sellers */}
               {!hasSellers && (
-                <motion.text
-                  x={getPathCenter(state.pathD).x}
-                  y={getPathCenter(state.pathD).y}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="text-[9px] font-medium fill-muted-foreground/60 pointer-events-none select-none"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ delay: 0.4 + index * 0.03 }}
-                >
-                  {state.id}
-                </motion.text>
+                <>
+                  <motion.text
+                    x={getPathCenter(state.pathD).x}
+                    y={getPathCenter(state.pathD).y}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="text-[8px] font-semibold fill-[#111] pointer-events-none select-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovered ? 1 : 0.85 }}
+                    transition={{ delay: 0.35 + index * 0.03 }}
+                  >
+                    {state.name}
+                  </motion.text>
+                  <motion.text
+                    x={getPathCenter(state.pathD).x}
+                    y={getPathCenter(state.pathD).y + 9}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="text-[7px] italic fill-muted-foreground/40 pointer-events-none select-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovered ? 0.9 : 0.5 }}
+                    transition={{ delay: 0.45 + index * 0.03 }}
+                  >
+                    Coming Soon
+                  </motion.text>
+                  
+                  {/* Decorative subtle dot for empty states */}
+                  <motion.circle
+                    cx={getPathCenter(state.pathD).x}
+                    cy={getPathCenter(state.pathD).y}
+                    r={2}
+                    fill="rgba(34,34,34,0.12)"
+                    className="pointer-events-none"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: isHovered ? 1.1 : 1 }}
+                    transition={{ delay: 0.55 + index * 0.03 }}
+                  />
+                </>
               )}
 
-              {/* Seller count badge for states with sellers */}
+              {/* Always render state name label for better political-map look */}
+              <motion.text
+                x={getPathCenter(state.pathD).x}
+                y={getPathCenter(state.pathD).y - 10}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="text-[9px] font-medium fill-[#111] pointer-events-none select-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 + index * 0.02 }}
+              >
+                {state.name}
+              </motion.text>
               {hasSellers && state.sellerCount > 0 && (
                 <motion.g
                   initial={{ scale: 0, opacity: 0 }}
@@ -226,7 +269,6 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                     damping: 15
                   }}
                 >
-                  {/* Pulsing background circle */}
                   <motion.circle
                     cx={getPathCenter(state.pathD).x}
                     cy={getPathCenter(state.pathD).y}
@@ -248,7 +290,6 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                     }}
                   />
                   
-                  {/* Main badge circle */}
                   <motion.circle
                     cx={getPathCenter(state.pathD).x}
                     cy={getPathCenter(state.pathD).y}
@@ -259,7 +300,6 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                     filter="url(#shadow)"
                   />
                   
-                  {/* Count text */}
                   <motion.text
                     x={getPathCenter(state.pathD).x}
                     y={getPathCenter(state.pathD).y}
@@ -278,6 +318,24 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
           );
         })}
       </motion.svg>
+
+      {/* Zoom controls */}
+      <div className="absolute top-6 right-6 z-50 flex flex-col gap-2">
+        <button
+          aria-label="Zoom in"
+          className="w-10 h-10 rounded-md bg-card/90 border border-border flex items-center justify-center text-sm font-bold shadow-md hover:bg-card"
+          onClick={zoomIn}
+        >
+          +
+        </button>
+        <button
+          aria-label="Zoom out"
+          className="w-10 h-10 rounded-md bg-card/90 border border-border flex items-center justify-center text-sm font-bold shadow-md hover:bg-card"
+          onClick={zoomOut}
+        >
+          -
+        </button>
+      </div>
 
       <AnimatePresence>
         {hoveredState && (
@@ -307,7 +365,7 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-muted-foreground/50" />
                   <p className="text-sm text-muted-foreground font-medium italic">
-                    No sellers yet
+                    Coming Soon
                   </p>
                 </div>
               )}
@@ -339,8 +397,8 @@ export function IndiaMap({ onStateSelect, selectedState }: IndiaMapProps) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.0 }}
           >
-            <div className="w-5 h-5 rounded-md bg-muted/25 border-2 border-border shadow-sm" />
-            <span className="text-muted-foreground font-medium">No Sellers</span>
+            <div className="w-5 h-5 rounded-md border-2 border-border shadow-sm" style={{ backgroundImage: "url(#emptyStatePattern)" }} />
+            <span className="text-muted-foreground font-medium">Coming Soon</span>
           </motion.div>
           <motion.div 
             className="flex items-center gap-3"

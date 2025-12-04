@@ -9,9 +9,11 @@ import type { StateData } from "@shared/schema";
 interface StateSidebarProps {
   state: StateData | null;
   onClose: () => void;
+  /** position of the sidebar: 'left' or 'right' */
+  side?: "left" | "right";
 }
 
-export function StateSidebar({ state, onClose }: StateSidebarProps) {
+export function StateSidebar({ state, onClose, side = "right" }: StateSidebarProps) {
   const sellers = state ? getSellersByState(state.id) : [];
 
   return (
@@ -28,11 +30,14 @@ export function StateSidebar({ state, onClose }: StateSidebarProps) {
           />
 
           <motion.aside
-            initial={{ x: "100%" }}
+            initial={ side === "right" ? { x: "100%" } : { x: "-100%" } }
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            exit={ side === "right" ? { x: "100%" } : { x: "-100%" } }
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-[420px] lg:w-[460px] bg-background border-l border-border z-50 flex flex-col"
+            className={
+              "fixed top-0 h-full w-full sm:w-[420px] lg:w-[460px] bg-background z-40 flex flex-col " +
+              (side === "right" ? "right-0 border-l border-border" : "left-0 border-r border-border")
+            }
             data-testid="sidebar-state-sellers"
           >
             <div className="flex items-center justify-between p-6 border-b border-border bg-card/50">
