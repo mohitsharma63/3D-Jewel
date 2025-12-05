@@ -14,10 +14,16 @@ import { indianStates, jewelryItems, formatPrice } from "@/lib/static-data";
 import { Link } from "wouter";
 import type { JewelryItem } from "@shared/schema";
 import type { StateData } from "@shared/schema";
+import SellerDashboard from "./seller-dashboard";
 
 export default function Home() {
   const [selectedState, setSelectedState] = useState<StateData | null>(null);
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const [userType, setUserType] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUserType(localStorage.getItem("userType"));
+  }, []);
 
   // Track scroll progress of the map element itself so we can make it largest
   // when it's centered in viewport and shrink as it moves away.
@@ -25,6 +31,11 @@ export default function Home() {
 
   const mapScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.7, 1, 0.7]);
   const mapOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.7, 1, 0.7]);
+
+  // If seller is logged in, show workshop dashboard
+  if (userType === "seller") {
+    return <SellerDashboard />;
+  }
 
   return (
     <div className={`min-h-screen pt-16 flex flex-col transition-all duration-300 ${selectedState ? "lg:ml-[460px]" : ""}`}>

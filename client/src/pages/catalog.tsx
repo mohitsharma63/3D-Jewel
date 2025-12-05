@@ -28,7 +28,14 @@ export default function Catalog() {
   const minPrice = Math.min(...jewelryItems.map((i) => i.price));
 
   const filteredItems = useMemo(() => {
+    const userType = localStorage.getItem("userType");
+    const sellerId = localStorage.getItem("sellerId");
+    
     return jewelryItems.filter((item) => {
+      // For sellers, only show items from their workshop
+      // Note: In a real app, items would have a sellerId field
+      // For now, we'll show all items for sellers too
+      
       const matchesSearch =
         searchQuery === "" ||
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -165,10 +172,12 @@ export default function Catalog() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2">
-              Jewelry Catalog
+              {localStorage.getItem("userType") === "seller" ? "My Workshop Catalog" : "Jewelry Catalog"}
             </h1>
             <p className="text-muted-foreground">
-              Explore {jewelryItems.length} exquisite pieces from master artisans
+              {localStorage.getItem("userType") === "seller" 
+                ? `Manage your ${jewelryItems.length} exquisite pieces`
+                : `Explore ${jewelryItems.length} exquisite pieces from master artisans`}
             </p>
           </motion.div>
         </div>
