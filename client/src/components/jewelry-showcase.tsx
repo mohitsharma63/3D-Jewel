@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -66,31 +66,23 @@ const showcaseItems: ShowcaseItem[] = [
 export function JewelryShowcase() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      rotateY: direction > 0 ? 45 : -45,
-      scale: 0.8
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-      rotateY: 0,
-      scale: 1
-    },
-    exit: (direction: number) => ({
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-      rotateY: direction < 0 ? 45 : -45,
-      scale: 0.8
-    })
-  };
+  useEffect(() => {
+    // Generate random particles for sparkle effect
+    const newParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 3
+    }));
+    setParticles(newParticles);
+  }, [currentIndex]);
 
   const paginate = (newDirection: number) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setDirection(newDirection);
     setCurrentIndex((prevIndex) => {
       let nextIndex = prevIndex + newDirection;
@@ -98,40 +90,61 @@ export function JewelryShowcase() {
       if (nextIndex >= showcaseItems.length) nextIndex = 0;
       return nextIndex;
     });
+    setTimeout(() => setIsAnimating(false), 800);
   };
 
   const currentItem = showcaseItems[currentIndex];
 
   return (
-    <section className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <motion.div
-          className="absolute top-10 right-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-20 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-      </div>
+    <section className="py-20 relative overflow-hidden">
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+      
+      {/* Floating orbs with smoother animations */}
+      <motion.div
+        className="absolute top-20 left-10 w-72 h-72 bg-primary/15 rounded-full blur-3xl"
+        animate={{
+          x: [0, 60, 0],
+          y: [0, 40, 0],
+          scale: [1, 1.15, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: [0.45, 0, 0.55, 1]
+        }}
+      />
+      <motion.div
+        className="absolute bottom-20 right-10 w-96 h-96 bg-amber-400/15 rounded-full blur-3xl"
+        animate={{
+          x: [0, -40, 0],
+          y: [0, -60, 0],
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: [0.45, 0, 0.55, 1],
+          delay: 2
+        }}
+      />
+      <motion.div
+        className="absolute top-1/2 left-1/2 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"
+        animate={{
+          x: [-40, 40, -40],
+          y: [-40, 40, -40],
+          scale: [1, 1.25, 1],
+          opacity: [0.2, 0.4, 0.2]
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: [0.45, 0, 0.55, 1],
+          delay: 4
+        }}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
@@ -144,194 +157,370 @@ export function JewelryShowcase() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4" />
-            <span>Cultural Heritage Collection</span>
+            <span>State-Wise Heritage Collection</span>
           </div>
           <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4">
-            3D Jewelry Showcase
+            Regional Masterpieces
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore India's finest jewelry traditions - each piece tells a story of craftsmanship and culture
+            Discover the finest craftsmanship from each state's unique jewelry tradition
           </p>
         </motion.div>
 
-        {/* 3D Showcase Slider */}
-        <div className="relative h-[600px] flex items-center justify-center perspective-1000">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
+        {/* 3D Floating Showcase */}
+        <div className="relative min-h-[700px] flex items-center justify-center perspective-1000">
+          <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={currentIndex}
               custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.3 },
-                rotateY: { duration: 0.5 },
-                scale: { duration: 0.4 }
+              initial={{
+                opacity: 0,
+                scale: 0.85,
+                rotateY: direction > 0 ? 45 : -45,
+                z: -200
               }}
-              className="absolute w-full max-w-13xl"
+              animate={{
+                opacity: 1,
+                scale: 1,
+                rotateY: 0,
+                z: 0
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.85,
+                rotateY: direction > 0 ? -45 : 45,
+                z: -200
+              }}
+              transition={{
+                duration: 0.7,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              className="absolute w-full"
               style={{ transformStyle: "preserve-3d" }}
             >
-              <div className="bg-card rounded-2xl shadow-2xl overflow-hidden border-2 border-primary/20">
-                <div className="grid md:grid-cols-2 gap-0">
-                  {/* Image Section with 3D effects */}
-                  <motion.div
-                    className="relative h-[400px] md:h-[600px] overflow-hidden bg-gradient-to-br from-primary/20 to-amber-500/20"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <motion.img
-                      src={currentItem.image}
-                      alt={currentItem.name}
-                      className="w-full h-full object-cover"
-                      initial={{ scale: 1.2, rotateZ: -5 }}
-                      animate={{ scale: 1, rotateZ: 0 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
-                    
-                    {/* 3D Floating Badge */}
+              <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+                {/* 3D Floating Product Image */}
+                <motion.div
+                  className="relative"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Sparkle particles */}
+                  {particles.map((particle) => (
                     <motion.div
-                      className="absolute top-6 right-6"
-                      initial={{ y: -20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.3, type: "spring" }}
-                      whileHover={{ scale: 1.1, rotateZ: 5 }}
-                    >
-                      <Badge className="bg-primary/90 backdrop-blur-sm text-primary-foreground px-4 py-2 text-sm font-semibold shadow-lg">
-                        {currentItem.specialty}
-                      </Badge>
-                    </motion.div>
-
-                    {/* Animated shine effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      initial={{ x: "-100%" }}
-                      animate={{ x: "200%" }}
+                      key={particle.id}
+                      className="absolute w-1 h-1 bg-yellow-400 rounded-full"
+                      style={{
+                        left: `${particle.x}%`,
+                        top: `${particle.y}%`,
+                      }}
+                      animate={{
+                        scale: [0, 1.5, 0],
+                        opacity: [0, 1, 0],
+                      }}
                       transition={{
                         duration: 2,
                         repeat: Infinity,
-                        repeatDelay: 3,
+                        delay: particle.delay,
+                      }}
+                    />
+                  ))}
+
+                  {/* Floating rings around product */}
+                  {[0, 120, 240].map((angle, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute inset-0"
+                      animate={{
+                        rotateZ: [angle, angle + 360],
+                      }}
+                      transition={{
+                        duration: 20 + i * 5,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                      style={{ transformStyle: "preserve-3d" }}
+                    >
+                      <div
+                        className="absolute w-full h-full rounded-full border-2 border-primary/20"
+                        style={{
+                          transform: `rotateX(${60 + i * 20}deg)`,
+                        }}
+                      />
+                    </motion.div>
+                  ))}
+
+                  {/* Main product container with smooth 3D rotation */}
+                  <motion.div
+                    className="relative z-10"
+                    animate={{
+                      rotateY: [0, 360],
+                      y: [0, -15, 0],
+                    }}
+                    transition={{
+                      rotateY: {
+                        duration: 25,
+                        repeat: Infinity,
+                        ease: "linear"
+                      },
+                      y: {
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: [0.45, 0, 0.55, 1]
+                      }
+                    }}
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    {/* Glow effect behind image */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-primary/40 via-amber-500/40 to-primary/40 rounded-full blur-3xl"
+                      animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
                         ease: "easeInOut"
                       }}
                     />
+
+                    {/* Product image with no background */}
+                    <motion.div
+                      className="relative"
+                      whileHover={{ scale: 1.05, rotateZ: 2 }}
+                      transition={{ 
+                        duration: 0.4,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                      }}
+                    >
+                      <img
+                        src={currentItem.image}
+                        alt={currentItem.name}
+                        className="w-full h-auto object-contain"
+                        style={{
+                          filter: "drop-shadow(0 25px 50px rgba(194, 127, 36, 0.4)) drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15))",
+                          mixBlendMode: "normal",
+                        }}
+                      />
+                      
+                      {/* Animated shine effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                        animate={{
+                          x: ["-120%", "220%"],
+                        }}
+                        transition={{
+                          duration: 4,
+                          repeat: Infinity,
+                          repeatDelay: 3,
+                          ease: [0.25, 0.46, 0.45, 0.94]
+                        }}
+                        style={{ mixBlendMode: "overlay" }}
+                      />
+                    </motion.div>
+
+                    {/* Floating specialty badge */}
+                    <motion.div
+                      className="absolute -top-4 -right-4"
+                      animate={{
+                        y: [0, -10, 0],
+                        rotate: [0, 5, 0, -5, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Badge className="bg-gradient-to-r from-primary to-amber-500 text-primary-foreground px-4 py-2 text-sm font-semibold shadow-2xl">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        {currentItem.specialty}
+                      </Badge>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+
+                {/* Content Section */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3, duration: 0.6 }}
+                  className="space-y-6"
+                >
+                  {/* State badge with icon */}
+                  <motion.div
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span className="font-medium">{currentItem.state}</span>
                   </motion.div>
 
-                  {/* Content Section */}
-                  <div className="p-8 md:p-12 flex flex-col justify-center">
-                    <motion.div
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
+                  {/* Product name */}
+                  <motion.h3
+                    className="font-serif text-4xl md:text-5xl font-bold text-foreground leading-tight"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    {currentItem.name}
+                  </motion.h3>
+
+                  {/* Culture description */}
+                  <motion.p
+                    className="text-lg text-muted-foreground leading-relaxed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    {currentItem.culture}
+                  </motion.p>
+
+                  {/* Price with animation */}
+                  <motion.div
+                    className="text-4xl font-bold bg-gradient-to-r from-primary to-amber-500 bg-clip-text text-transparent"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.6, type: "spring" }}
+                  >
+                    {currentItem.price}
+                  </motion.div>
+
+                  {/* CTA Button */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <Button
+                      size="lg"
+                      className="group relative overflow-hidden bg-gradient-to-r from-primary to-amber-500 hover:shadow-2xl transition-all duration-300"
                     >
-                      {/* State Badge */}
+                      <span className="relative z-10 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" />
+                        Explore Collection
+                      </span>
                       <motion.div
-                        className="inline-flex items-center gap-2 mb-4 text-primary"
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-sm font-medium">{currentItem.state}</span>
-                      </motion.div>
-
-                      {/* Title */}
-                      <motion.h3
-                        className="font-serif text-3xl md:text-4xl font-bold mb-4 text-foreground"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        {currentItem.name}
-                      </motion.h3>
-
-                      {/* Culture Description */}
-                      <motion.p
-                        className="text-muted-foreground mb-6 leading-relaxed"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4 }}
-                      >
-                        {currentItem.culture}
-                      </motion.p>
-
-                      {/* Price */}
-                      <motion.div
-                        className="text-3xl font-bold text-primary mb-8"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5, type: "spring" }}
-                      >
-                        {currentItem.price}
-                      </motion.div>
-
-                      {/* CTA Button */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                      >
-                        <Button
-                          size="lg"
-                          className="w-full md:w-auto shadow-lg hover:shadow-xl transition-all"
-                        >
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          View Collection
-                        </Button>
-                      </motion.div>
-                    </motion.div>
-                  </div>
-                </div>
+                        className="absolute inset-0 bg-gradient-to-r from-amber-500 to-primary"
+                        initial={{ x: "100%" }}
+                        whileHover={{ x: 0 }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </Button>
+                  </motion.div>
+                </motion.div>
               </div>
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation Buttons */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 pointer-events-none z-20"
-          >
-            <Button
-              size="icon"
-              variant="outline"
-              className="pointer-events-auto w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border-2 border-primary/20 shadow-xl hover:scale-110 transition-transform"
-              onClick={() => paginate(-1)}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4 pointer-events-none z-20">
+            <motion.div
+              whileHover={{ scale: 1.1, x: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="pointer-events-auto"
             >
-              <ChevronLeft className="w-6 h-6" />
-            </Button>
-            <Button
-              size="icon"
-              variant="outline"
-              className="pointer-events-auto w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border-2 border-primary/20 shadow-xl hover:scale-110 transition-transform"
-              onClick={() => paginate(1)}
+              <Button
+                size="icon"
+                variant="outline"
+                className="w-16 h-16 rounded-full bg-background/90 backdrop-blur-xl border-2 border-primary/40 shadow-2xl hover:bg-primary/10 hover:border-primary/60 transition-all duration-300"
+                onClick={() => paginate(-1)}
+                disabled={isAnimating}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.1, x: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="pointer-events-auto"
             >
-              <ChevronRight className="w-6 h-6" />
-            </Button>
-          </motion.div>
+              <Button
+                size="icon"
+                variant="outline"
+                className="w-16 h-16 rounded-full bg-background/90 backdrop-blur-xl border-2 border-primary/40 shadow-2xl hover:bg-primary/10 hover:border-primary/60 transition-all duration-300"
+                onClick={() => paginate(1)}
+                disabled={isAnimating}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </Button>
+            </motion.div>
+          </div>
         </div>
 
-        {/* Pagination Dots */}
+        {/* Enhanced Pagination Dots */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
-          className="flex justify-center gap-3 mt-12"
+          className="flex justify-center items-center gap-2.5 mt-16"
         >
-          {showcaseItems.map((_, index) => (
+          {showcaseItems.map((item, index) => (
             <motion.button
               key={index}
               onClick={() => {
-                setDirection(index > currentIndex ? 1 : -1);
-                setCurrentIndex(index);
+                if (!isAnimating) {
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
+                }
               }}
-              className={`h-2 rounded-full transition-all ${
-                index === currentIndex
-                  ? "w-12 bg-primary"
-                  : "w-2 bg-primary/30 hover:bg-primary/50"
-              }`}
-              whileHover={{ scale: 1.2 }}
+              className={`relative group ${
+                index === currentIndex ? "w-14" : "w-2.5"
+              } h-2.5 rounded-full transition-all duration-500 ease-out`}
+              whileHover={{ scale: 1.3 }}
               whileTap={{ scale: 0.9 }}
-            />
+              disabled={isAnimating}
+            >
+              <div
+                className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                  index === currentIndex
+                    ? "bg-gradient-to-r from-primary via-amber-500 to-primary shadow-lg shadow-primary/50"
+                    : "bg-primary/25 group-hover:bg-primary/50"
+                }`}
+              />
+              {index === currentIndex && (
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-white/40"
+                  animate={{ x: ["-120%", "220%"] }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatDelay: 1.5,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
+                />
+              )}
+            </motion.button>
+          ))}
+        </motion.div>
+
+        {/* State indicator labels */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="flex justify-center gap-6 mt-8 flex-wrap"
+        >
+          {showcaseItems.map((item, index) => (
+            <motion.button
+              key={item.id}
+              onClick={() => {
+                if (!isAnimating) {
+                  setDirection(index > currentIndex ? 1 : -1);
+                  setCurrentIndex(index);
+                }
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 ${
+                index === currentIndex
+                  ? "text-primary-foreground bg-gradient-to-r from-primary to-amber-500 shadow-lg shadow-primary/30 scale-105"
+                  : "text-muted-foreground hover:text-foreground hover:bg-primary/5"
+              }`}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={isAnimating}
+            >
+              {item.state}
+            </motion.button>
           ))}
         </motion.div>
       </div>

@@ -173,96 +173,120 @@ export default function Home() {
 
 function ProductShowcaseSections() {
   return (
-    <div className="space-y-20 py-20">
-      {/* Bestsellers Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <Badge className="mb-4 bg-amber-500/10 text-amber-600 border-amber-500/20">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            Bestsellers
-          </Badge>
-          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4">
-            Most Loved Pieces
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Handpicked favorites from our master artisans across India
-          </p>
-        </motion.div>
+    <div className="space-y-32 py-20">
+      {/* Bestsellers Section - Flowing Layout */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-6 bg-amber-500/10 text-amber-600 border-amber-500/20 px-6 py-3 text-base">
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Bestsellers
+            </Badge>
+            <h2 className="font-serif text-5xl md:text-6xl font-bold mb-6">
+              Most Loved Pieces
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Handpicked favorites from our master artisans across India
+            </p>
+          </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {jewelryItems.slice(0, 3).map((item, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Large featured item */}
             <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="lg:col-span-2 lg:row-span-2"
             >
-              <Product3DCard item={item} badge="Bestseller" />
+              <FlowingProduct3DCard item={jewelryItems[0]} badge="Bestseller" size="large" />
             </motion.div>
-          ))}
+
+            {/* Smaller items */}
+            {jewelryItems.slice(1, 3).map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15 }}
+              >
+                <FlowingProduct3DCard item={item} badge="Bestseller" size="small" />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Featured Collection */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
-            <Crown className="w-4 h-4 mr-2" />
-            Featured Collection
-          </Badge>
-          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4">
-            Artisan's Pride
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Exceptional craftsmanship showcasing India's rich heritage
-          </p>
-        </motion.div>
+      {/* Featured Collection - Curved Layout */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 to-transparent py-20 rounded-[80px]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20 px-6 py-3 text-base">
+              <Crown className="w-5 h-5 mr-2" />
+              Featured Collection
+            </Badge>
+            <h2 className="font-serif text-5xl md:text-6xl font-bold mb-6">
+              Artisan's Pride
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Exceptional craftsmanship showcasing India's rich heritage
+            </p>
+          </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {jewelryItems.slice(3, 6).map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-            >
-              <Product3DCard item={item} badge="Featured" />
-            </motion.div>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {jewelryItems.slice(3, 5).map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.2 }}
+              >
+                <FlowingProduct3DCard item={item} badge="Featured" size="medium" />
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="mt-8"
+          >
+            <FlowingProduct3DCard item={jewelryItems[5]} badge="Featured" size="wide" />
+          </motion.div>
         </div>
       </section>
 
-      {/* New Launches */}
+      {/* New Launches - Asymmetric Layout */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <Badge className="mb-4 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-            <Sparkles className="w-4 h-4 mr-2" />
+          <Badge className="mb-6 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 px-6 py-3 text-base">
+            <Sparkles className="w-5 h-5 mr-2" />
             New Launches
           </Badge>
-          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="font-serif text-5xl md:text-6xl font-bold mb-6">
             Fresh Arrivals
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Discover the latest creations from our talented artisans
           </p>
         </motion.div>
@@ -271,12 +295,13 @@ function ProductShowcaseSections() {
           {jewelryItems.slice(6, 9).map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
+              transition={{ delay: index * 0.1 }}
+              className={index === 1 ? "lg:translate-y-12" : ""}
             >
-              <Product3DCard item={item} badge="New" />
+              <FlowingProduct3DCard item={item} badge="New" size="small" />
             </motion.div>
           ))}
         </div>
@@ -285,84 +310,131 @@ function ProductShowcaseSections() {
   );
 }
 
-function Product3DCard({ item, badge }: { item: JewelryItem; badge: string }) {
+function FlowingProduct3DCard({ 
+  item, 
+  badge, 
+  size = "medium" 
+}: { 
+  item: JewelryItem; 
+  badge: string; 
+  size?: "small" | "medium" | "large" | "wide";
+}) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const heightClass = {
+    small: "h-[400px]",
+    medium: "h-[500px]",
+    large: "h-[700px]",
+    wide: "h-[450px]"
+  }[size];
 
   return (
     <motion.div
-      className="group relative"
+      className="group relative h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      whileHover={{ y: -10 }}
-      transition={{ duration: 0.3 }}
+      whileHover={{ y: -15, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="relative bg-card rounded-2xl overflow-hidden border-2 border-card-border shadow-lg hover:shadow-2xl transition-shadow duration-300">
-        {/* 3D Image Container */}
-        <div className="relative h-80 overflow-hidden bg-gradient-to-br from-primary/5 to-amber-500/5">
-          <motion.img
-            src={item.imageUrl}
-            alt={item.name}
-            className="w-full h-full object-cover"
-            animate={{
-              scale: isHovered ? 1.15 : 1,
-              rotateY: isHovered ? 10 : 0,
-            }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            style={{ transformStyle: "preserve-3d" }}
-          />
-
-          {/* Shine effect */}
+      <div className={`relative ${heightClass} bg-gradient-to-br from-background to-primary/5 rounded-[40px] overflow-hidden border-2 border-primary/10 shadow-2xl`}>
+        {/* 3D Floating Product */}
+        <div className="absolute inset-0 flex items-center justify-center p-8">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-            initial={{ x: "-100%" }}
-            animate={{ x: isHovered ? "200%" : "-100%" }}
-            transition={{ duration: 0.8 }}
-          />
+            className="relative w-full h-full"
+            animate={{
+              rotateY: isHovered ? [0, 360] : 0,
+              y: isHovered ? [0, -20, 0] : 0,
+            }}
+            transition={{
+              rotateY: { duration: 3, ease: "linear", repeat: isHovered ? Infinity : 0 },
+              y: { duration: 2, ease: "easeInOut", repeat: isHovered ? Infinity : 0 }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              className="w-full h-full object-contain drop-shadow-2xl"
+            />
+          </motion.div>
 
+          {/* Sparkle effects */}
+          {isHovered && [...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-amber-400 rounded-full"
+              style={{
+                left: `${20 + Math.random() * 60}%`,
+                top: `${20 + Math.random() * 60}%`,
+              }}
+              animate={{
+                scale: [0, 1.5, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.2,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Curved content overlay */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/95 to-transparent backdrop-blur-md p-8 rounded-t-[40px]">
           {/* Badge */}
-          <div className="absolute top-4 right-4">
-            <Badge className={`shadow-lg ${
+          <motion.div
+            className="absolute -top-6 right-8"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Badge className={`shadow-xl px-4 py-2 text-sm font-semibold ${
               badge === "Bestseller" ? "bg-amber-500" :
               badge === "Featured" ? "bg-primary" :
               "bg-emerald-500"
             }`}>
               {badge}
             </Badge>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Content */}
-        <div className="p-6">
-          <h3 className="font-serif text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+          <h3 className="font-serif text-2xl md:text-3xl font-bold mb-2 group-hover:text-primary transition-colors">
             {item.name}
           </h3>
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-            {item.description}
-          </p>
+          
+          {size !== "small" && (
+            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+              {item.description}
+            </p>
+          )}
 
           <div className="flex items-center justify-between mb-4">
             <div className="text-sm text-muted-foreground">
-              <span className="font-medium">{item.material}</span> • {item.weight}
+              <span className="font-medium">{item.material}</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-3xl font-bold text-primary">
               {formatPrice(item.price)}
             </span>
-            <Button size="sm" className="gap-2">
-              View Details
+            <Button size="sm" variant="outline" className="gap-2 bg-background/50 backdrop-blur-sm">
+              View
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        {/* 3D Border glow effect */}
+        {/* Animated border glow */}
         <motion.div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+          className="absolute inset-0 rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
           style={{
-            background: "linear-gradient(45deg, transparent, rgba(194, 127, 36, 0.2), transparent)",
+            background: "linear-gradient(135deg, transparent, rgba(194, 127, 36, 0.3), transparent)",
+            backgroundSize: "200% 200%",
           }}
+          animate={isHovered ? {
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          } : {}}
+          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
         />
       </div>
     </motion.div>
