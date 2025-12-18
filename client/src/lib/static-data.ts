@@ -1,58 +1,36 @@
-
 import type { Seller, Workshop, JewelryItem, StateData } from "@shared/schema";
 
 export const indianStates: StateData[] = [
-  // North India
-  { id: "JK", name: "Jammu & Kashmir", sellerCount: 2, pathD: "M250,45 L285,35 L315,42 L335,65 L340,95 L325,118 L295,125 L265,115 L245,85 L242,60 Z" },
-  { id: "HP", name: "Himachal Pradesh", sellerCount: 2, pathD: "M265,115 L295,125 L325,118 L345,135 L355,165 L340,185 L310,195 L280,188 L268,158 Z" },
-  { id: "PB", name: "Punjab", sellerCount: 4, pathD: "M225,125 L265,115 L280,145 L285,175 L270,200 L240,205 L215,185 L210,150 Z" },
-  { id: "CH", name: "Chandigarh", sellerCount: 1, pathD: "M268,158 L278,153 L283,163 L278,173 L270,175 L266,165 Z" },
-  { id: "HR", name: "Haryana", sellerCount: 3, pathD: "M240,205 L270,200 L285,210 L295,240 L285,270 L255,275 L230,255 L225,230 Z" },
-  { id: "DL", name: "Delhi", sellerCount: 5, pathD: "M280,235 L290,230 L297,240 L292,250 L282,252 L277,242 Z" },
-  { id: "UK", name: "Uttarakhand", sellerCount: 2, pathD: "M310,195 L340,185 L370,195 L385,220 L380,250 L355,265 L325,258 L308,235 Z" },
-  { id: "UP", name: "Uttar Pradesh", sellerCount: 6, pathD: "M285,270 L325,258 L380,265 L435,280 L465,310 L470,355 L450,385 L395,395 L345,385 L305,365 L285,330 Z" },
-
-  // West India
-  { id: "RJ", name: "Rajasthan", sellerCount: 7, pathD: "M145,175 L210,150 L240,180 L285,210 L295,260 L305,320 L290,375 L255,400 L205,405 L160,385 L130,340 L125,280 L130,220 Z" },
-  { id: "GJ", name: "Gujarat", sellerCount: 6, pathD: "M115,385 L160,385 L205,405 L225,445 L235,490 L220,525 L185,545 L145,540 L110,520 L85,480 L80,435 Z" },
-  { id: "DD", name: "Dadra & Nagar Haveli", sellerCount: 0, pathD: "M207,458 L217,456 L222,468 L218,478 L209,480 L205,470 Z" },
-  { id: "DH", name: "Daman & Diu", sellerCount: 0, pathD: "M168,448 L178,446 L183,458 L179,468 L170,470 L166,460 Z" },
-
-  // Central India
-  { id: "MP", name: "Madhya Pradesh", sellerCount: 4, pathD: "M255,400 L305,385 L365,395 L425,405 L465,430 L475,475 L455,515 L410,535 L355,540 L300,525 L265,495 L245,450 Z" },
-  { id: "CG", name: "Chhattisgarh", sellerCount: 2, pathD: "M455,515 L475,475 L510,465 L545,485 L560,525 L555,570 L525,595 L490,600 L460,585 L445,550 Z" },
-
-  // East India
-  { id: "BR", name: "Bihar", sellerCount: 3, pathD: "M470,355 L510,345 L545,360 L560,395 L555,430 L525,450 L490,445 L465,420 Z" },
-  { id: "JH", name: "Jharkhand", sellerCount: 3, pathD: "M490,445 L525,450 L555,465 L565,500 L560,540 L530,565 L500,570 L475,555 L465,520 Z" },
-  { id: "WB", name: "West Bengal", sellerCount: 5, pathD: "M555,430 L590,420 L620,440 L630,480 L625,525 L600,555 L570,565 L545,545 L540,500 Z" },
-  { id: "OR", name: "Odisha", sellerCount: 4, pathD: "M490,600 L525,595 L560,610 L575,650 L570,695 L540,720 L505,725 L475,705 L465,665 L470,625 Z" },
-
-  // Northeast India
-  { id: "SK", name: "Sikkim", sellerCount: 1, pathD: "M585,315 L600,310 L610,325 L605,340 L592,343 L583,330 Z" },
-  { id: "AS", name: "Assam", sellerCount: 3, pathD: "M610,345 L660,335 L695,355 L710,395 L705,435 L675,460 L640,465 L615,445 L605,405 Z" },
-  { id: "ML", name: "Meghalaya", sellerCount: 1, pathD: "M650,435 L675,430 L685,450 L680,465 L660,468 L648,453 Z" },
-  { id: "AR", name: "Arunachal Pradesh", sellerCount: 1, pathD: "M660,280 L715,265 L750,290 L760,330 L750,370 L715,390 L680,385 L655,360 L650,320 Z" },
-  { id: "NL", name: "Nagaland", sellerCount: 1, pathD: "M705,395 L730,390 L745,415 L740,440 L720,445 L705,430 Z" },
-  { id: "MN", name: "Manipur", sellerCount: 1, pathD: "M715,445 L735,440 L745,465 L740,485 L720,490 L710,470 Z" },
-  { id: "MZ", name: "Mizoram", sellerCount: 1, pathD: "M705,490 L720,485 L730,510 L725,530 L705,533 L695,513 Z" },
-  { id: "TR", name: "Tripura", sellerCount: 1, pathD: "M655,475 L675,470 L685,490 L680,510 L660,513 L650,495 Z" },
-
-  // West Coast
-  { id: "MH", name: "Maharashtra", sellerCount: 8, pathD: "M235,490 L300,525 L355,540 L410,555 L435,595 L430,645 L395,685 L345,700 L290,695 L245,665 L220,615 L215,560 Z" },
-  { id: "GA", name: "Goa", sellerCount: 2, pathD: "M245,665 L270,660 L280,680 L275,700 L255,705 L245,685 Z" },
-
-  // South India
-  { id: "KA", name: "Karnataka", sellerCount: 5, pathD: "M275,700 L345,700 L395,715 L420,755 L415,800 L385,835 L340,850 L290,845 L260,820 L250,775 L255,735 Z" },
-  { id: "TN", name: "Tamil Nadu", sellerCount: 6, pathD: "M340,850 L385,835 L425,850 L450,885 L455,930 L430,965 L385,980 L340,975 L305,950 L295,910 L300,870 Z" },
-  { id: "PY", name: "Puducherry", sellerCount: 1, pathD: "M378,918 L390,916 L395,930 L390,943 L378,945 L373,932 Z" },
-  { id: "KL", name: "Kerala", sellerCount: 4, pathD: "M250,775 L290,770 L310,805 L320,850 L315,895 L305,935 L285,965 L260,970 L240,945 L235,900 L240,855 L245,815 Z" },
-  { id: "AP", name: "Andhra Pradesh", sellerCount: 5, pathD: "M430,645 L475,635 L520,650 L545,685 L550,730 L535,775 L500,805 L455,815 L420,795 L405,755 Z" },
-  { id: "TS", name: "Telangana", sellerCount: 4, pathD: "M410,555 L455,545 L495,560 L515,595 L520,635 L495,665 L460,675 L425,665 L405,630 Z" },
-
-  // Union Territories
-  { id: "AN", name: "Andaman & Nicobar", sellerCount: 0, pathD: "M720,750 L735,748 L742,770 L738,790 L725,792 L718,775 Z" },
-  { id: "LD", name: "Lakshadweep", sellerCount: 0, pathD: "M165,835 L177,833 L182,847 L178,860 L167,862 L162,849 Z" },
+  { id: "MH", name: "Maharashtra", sellerCount: 8, pathD: "M220,340 L270,320 L310,340 L330,380 L310,430 L270,450 L220,430 L200,380 Z" },
+  { id: "GJ", name: "Gujarat", sellerCount: 6, pathD: "M100,300 L150,280 L200,300 L200,350 L180,400 L130,400 L90,380 L90,330 Z" },
+  { id: "RJ", name: "Rajasthan", sellerCount: 7, pathD: "M150,180 L220,160 L290,180 L310,250 L270,320 L180,320 L130,280 L130,230 Z" },
+  { id: "KA", name: "Karnataka", sellerCount: 5, pathD: "M230,450 L280,430 L330,450 L330,520 L280,560 L230,540 L210,490 Z" },
+  { id: "TN", name: "Tamil Nadu", sellerCount: 6, pathD: "M280,560 L330,540 L380,560 L380,630 L330,650 L280,630 L260,600 Z" },
+  { id: "KL", name: "Kerala", sellerCount: 4, pathD: "M210,540 L240,520 L270,540 L270,610 L240,630 L210,610 L200,580 Z" },
+  { id: "AP", name: "Andhra Pradesh", sellerCount: 5, pathD: "M310,430 L380,410 L430,460 L410,530 L330,560 L280,510 Z" },
+  { id: "TS", name: "Telangana", sellerCount: 4, pathD: "M310,360 L380,340 L430,390 L410,440 L330,440 L310,410 Z" },
+  { id: "WB", name: "West Bengal", sellerCount: 5, pathD: "M480,260 L530,240 L560,290 L540,360 L490,380 L460,330 L460,280 Z" },
+  { id: "UP", name: "Uttar Pradesh", sellerCount: 6, pathD: "M310,180 L410,160 L470,210 L470,280 L400,330 L310,310 L290,260 Z" },
+  { id: "MP", name: "Madhya Pradesh", sellerCount: 4, pathD: "M240,280 L340,260 L410,280 L410,350 L340,400 L270,380 L240,330 Z" },
+  { id: "BR", name: "Bihar", sellerCount: 3, pathD: "M450,240 L500,220 L530,260 L510,310 L460,310 L440,280 Z" },
+  { id: "OR", name: "Odisha", sellerCount: 4, pathD: "M410,350 L480,330 L510,400 L480,450 L400,450 L380,400 Z" },
+  { id: "PB", name: "Punjab", sellerCount: 4, pathD: "M220,90 L270,70 L320,90 L320,140 L270,160 L220,140 L200,115 Z" },
+  { id: "HR", name: "Haryana", sellerCount: 3, pathD: "M250,140 L300,120 L350,140 L350,190 L300,210 L250,190 L230,165 Z" },
+  { id: "DL", name: "Delhi", sellerCount: 5, pathD: "M300,160 L320,150 L340,160 L340,185 L320,195 L300,185 Z" },
+  { id: "JH", name: "Jharkhand", sellerCount: 3, pathD: "M470,310 L520,290 L550,340 L530,390 L480,390 L460,360 Z" },
+  { id: "CG", name: "Chhattisgarh", sellerCount: 2, pathD: "M380,350 L440,330 L490,380 L470,450 L400,450 L370,410 Z" },
+  { id: "AS", name: "Assam", sellerCount: 3, pathD: "M550,180 L620,160 L660,210 L640,260 L570,260 L550,230 Z" },
+  { id: "JK", name: "Jammu & Kashmir", sellerCount: 2, pathD: "M190,30 L250,20 L300,50 L300,100 L240,120 L190,100 L170,65 Z" },
+  { id: "UK", name: "Uttarakhand", sellerCount: 2, pathD: "M310,100 L360,80 L410,100 L410,150 L360,170 L310,150 L290,125 Z" },
+  { id: "HP", name: "Himachal Pradesh", sellerCount: 2, pathD: "M270,50 L320,40 L370,60 L370,100 L320,120 L270,100 L250,75 Z" },
+  { id: "GA", name: "Goa", sellerCount: 2, pathD: "M210,470 L235,460 L250,485 L235,510 L210,500 Z" },
+  { id: "NL", name: "Nagaland", sellerCount: 1, pathD: "M620,210 L655,200 L675,235 L655,260 L620,250 Z" },
+  { id: "MN", name: "Manipur", sellerCount: 1, pathD: "M620,260 L655,250 L675,290 L655,320 L620,310 Z" },
+  { id: "MZ", name: "Mizoram", sellerCount: 1, pathD: "M595,320 L630,310 L650,355 L630,380 L595,370 Z" },
+  { id: "TR", name: "Tripura", sellerCount: 1, pathD: "M570,320 L605,310 L620,345 L600,370 L570,360 Z" },
+  { id: "ML", name: "Meghalaya", sellerCount: 1, pathD: "M570,260 L620,250 L645,275 L620,300 L570,290 Z" },
+  { id: "SK", name: "Sikkim", sellerCount: 1, pathD: "M500,180 L525,170 L540,195 L525,220 L500,210 Z" },
+  { id: "AR", name: "Arunachal Pradesh", sellerCount: 1, pathD: "M595,120 L660,100 L705,150 L685,200 L615,200 L595,170 Z" },
 ];
 
 export const sellers: Seller[] = [
@@ -99,7 +77,7 @@ export const sellers: Seller[] = [
     address: "12, Manek Chowk, Relief Road",
     phone: "+91 79 2550 1234",
     email: "sales@kcjewellers.in",
-    whatsapp: "+99786 54321",
+    whatsapp: "+91 99786 54321",
     rating: 4.8,
     reviewCount: 256,
     specialties: ["Antique", "Jadau", "Meenakari"],
